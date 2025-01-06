@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Squirt Tools</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Setup background music
+            const music = new Audio('https://res.cloudinary.com/dakoxedxt/video/upload/v1736176986/squirt_queen_mix_ndj8wq.mp3');
+            music.volume = 0.2; // Set music volume to 20%
+            music.loop = true;
+            
+            // Setup video audio
+            const videoAudio = new Audio('https://res.cloudinary.com/dakoxedxt/video/upload/v1736174949/POLICE_NOLOGO_gukxek.mov');
+            videoAudio.volume = 1.0; // Full volume for video audio
+            videoAudio.loop = true;
+            
+            // Add tap/click indicator
+            const tapIndicator = document.createElement('div');
+            tapIndicator.className = 'tap-indicator';
+            tapIndicator.innerHTML = '🔊 Tap for sound';
+            document.body.appendChild(tapIndicator);
+
+            // Play audio on first interaction
+            function startAudio() {
+                Promise.all([
+                    music.play(),
+                    videoAudio.play()
+                ]).then(() => {
+                    tapIndicator.style.opacity = '0';
+                    setTimeout(() => tapIndicator.remove(), 300);
+                }).catch(console.error);
+                document.removeEventListener('click', startAudio);
+                document.removeEventListener('touchstart', startAudio);
+            }
+
+            document.addEventListener('click', startAudio);
+            document.addEventListener('touchstart', startAudio);
+        });
+    </script>
+</head>
+<body>
+    <div class="video-background">
+        <video autoplay muted loop playsinline>
+            <source src="https://res.cloudinary.com/dakoxedxt/video/upload/q_auto,f_auto,c_scale,w_1280/v1736174949/POLICE_NOLOGO_gukxek.mov" type="video/mp4">
+        </video>
+    </div>
+    <div class="center-content">
+        <a href="squirtmaker/index.html" class="main-link">
+            <img src="https://res.cloudinary.com/dakoxedxt/image/upload/fl_animated,dl_25/v1735396014/piggysquirt.gif" 
+                 alt="Piggy Squirt Animation" 
+                 class="piggy-gif">
+            <img src="https://res.cloudinary.com/dakoxedxt/image/upload/v1736173387/SQUIRT_MAKER_ah4piv.png" 
+                 alt="Squirt Maker Logo" 
+                 class="logo">
+        </a>
+        <div class="social-links">
+            <a href="https://dexscreener.com" target="_blank" rel="noopener">DexScreener</a>
+            <span class="separator">•</span>
+            <a href="https://x.com" target="_blank" rel="noopener">𝕏</a>
+            <span class="separator">•</span>
+            <a href="https://t.me" target="_blank" rel="noopener">Telegram</a>
+            <span class="separator">•</span>
+            <a href="#" class="copy-address" onclick="copyAddress(event)">Copy Contract</a>
+        </div>
+        <div id="copy-notification" class="copy-notification">Copied!</div>
+        <script>
+            function copyAddress(e) {
+                e.preventDefault();
+                const address = '7ty3ruNJebb8RYmzfpUommJnZnCwaoB8RNfqpjLMpumffff';
+                navigator.clipboard.writeText(address).then(() => {
+                    const notification = document.getElementById('copy-notification');
+                    notification.style.opacity = '1';
+                    setTimeout(() => {
+                        notification.style.opacity = '0';
+                    }, 2000);
+                });
+            }
+        </script>
+    </div>
+</body>
+</html>
