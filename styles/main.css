@@ -93,29 +93,64 @@ body {
 
 .music-prompt {
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
     font-size: 36px;
     font-weight: bold;
-    color: white;
+    color: black;
     text-shadow: 
-        -2px -2px 0 #000,
-        2px -2px 0 #000,
-        -2px 2px 0 #000,
-        2px 2px 0 #000;
+        -1px -1px 0 #FFD700,
+        1px -1px 0 #FFD700,
+        -1px 1px 0 #FFD700,
+        1px 1px 0 #FFD700;
     transition: opacity 0.3s ease;
     z-index: 2;
-    animation: flash 3s infinite;
-    width: 100%;
+    animation: 
+        position-change 12s infinite steps(1);
+    width: 150vw;
     text-align: center;
-    background: rgba(0, 0, 0, 0.5);
+    background: #FFD700;
     padding: 20px 0;
+    left: 50%;
+    transform-origin: center;
 }
 
-@keyframes flash {
-    0%, 100% { opacity: 0; }
-    50% { opacity: 1; }
+@keyframes position-change {
+    0% { 
+        top: 20%;
+        opacity: 1;
+        transform: translate(-50%, 0) rotate(-35deg);
+    }
+    20% {
+        opacity: 0;
+    }
+    25% {
+        top: 40%;
+        opacity: 1;
+        transform: translate(-50%, 0) rotate(15deg);
+    }
+    45% {
+        opacity: 0;
+    }
+    50% {
+        top: 70%;
+        opacity: 1;
+        transform: translate(-50%, 0) rotate(-20deg);
+    }
+    70% {
+        opacity: 0;
+    }
+    75% {
+        top: 50%;
+        opacity: 1;
+        transform: translate(-50%, 0) rotate(25deg);
+    }
+    95% {
+        opacity: 0;
+    }
+    100% {
+        top: 20%;
+        opacity: 1;
+        transform: translate(-50%, 0) rotate(-35deg);
+    }
 }
 
 .tool-preview {
