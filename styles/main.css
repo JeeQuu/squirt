@@ -91,20 +91,32 @@ body {
     }
 } 
 
-.tap-indicator {
+.music-prompt {
     position: fixed;
-    bottom: 20px;
+    top: 50%;
     left: 50%;
-    transform: translateX(-50%);
-    background: rgba(255, 255, 255, 0.9);
-    padding: 10px 20px;
-    border-radius: 20px;
-    font-size: 14px;
-    backdrop-filter: blur(5px);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transform: translate(-50%, -50%);
+    font-size: 36px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 
+        -2px -2px 0 #000,
+        2px -2px 0 #000,
+        -2px 2px 0 #000,
+        2px 2px 0 #000;
     transition: opacity 0.3s ease;
     z-index: 2;
-} 
+    animation: flash 3s infinite;
+    width: 100%;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 20px 0;
+}
+
+@keyframes flash {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
+}
 
 .tool-preview {
     position: relative;
@@ -191,4 +203,22 @@ body {
         margin-top: 70px;
         font-size: 12px;
     }
+} 
+
+.contract-link {
+    margin-top: 15px;
+    text-align: center;
+    z-index: 1;
+}
+
+.contract-link a {
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    transition: opacity 0.3s ease;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.contract-link a:hover {
+    opacity: 0.8;
 } 

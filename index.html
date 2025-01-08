@@ -19,8 +19,8 @@
             
             // Add tap/click indicator
             const tapIndicator = document.createElement('div');
-            tapIndicator.className = 'tap-indicator';
-            tapIndicator.innerHTML = '🔊 Tap for sound';
+            tapIndicator.className = 'music-prompt';
+            tapIndicator.innerHTML = 'DOUBLE TAP FOR MUSIC';
             document.body.appendChild(tapIndicator);
 
             // Play audio on first interaction
@@ -62,7 +62,8 @@
             <a href="https://x.com" target="_blank" rel="noopener">𝕏</a>
             <span class="separator">•</span>
             <a href="https://t.me" target="_blank" rel="noopener">Telegram</a>
-            <span class="separator">•</span>
+        </div>
+        <div class="contract-link">
             <a href="#" class="copy-address" onclick="copyAddress(event)">Copy Contract</a>
         </div>
         <div id="copy-notification" class="copy-notification">Copied!</div>

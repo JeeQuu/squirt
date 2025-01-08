@@ -10,6 +10,33 @@
     <script src="https://cdn.jsdelivr.net/gh/jnordberg/gif.js/dist/gif.worker.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js"></script>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'></svg>">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Setup background music
+            const music = new Audio('https://res.cloudinary.com/dakoxedxt/video/upload/v1736176986/squirt_queen_mix_ndj8wq.mp3');
+            music.volume = 0.2; // Set music volume to 20%
+            music.loop = true;
+            
+            // Add tap/click indicator
+            const tapIndicator = document.createElement('div');
+            tapIndicator.className = 'music-prompt';
+            tapIndicator.innerHTML = 'DOUBLE TAP FOR MUSIC';
+            document.body.appendChild(tapIndicator);
+
+            // Play audio on first interaction
+            function startAudio() {
+                music.play().then(() => {
+                    tapIndicator.style.opacity = '0';
+                    setTimeout(() => tapIndicator.remove(), 300);
+                }).catch(console.error);
+                document.removeEventListener('click', startAudio);
+                document.removeEventListener('touchstart', startAudio);
+            }
+
+            document.addEventListener('click', startAudio);
+            document.addEventListener('touchstart', startAudio);
+        });
+    </script>
     <style>
         .loading {
             position: fixed;

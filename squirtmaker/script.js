@@ -30,14 +30,14 @@ const CONFIG = {
         HEIGHT: 512
     },
     EXPORT: {
-        MAX_SIZE: 256 * 1024,    // 256KB (Telegram limit)
-        TARGET_SIZE: 252 * 1024, // Target closer to limit (252KB)
-        MIN_BITRATE: 500000,     // Increased minimum to 500Kbps
-        MAX_BITRATE: 6000000,    // Increased maximum to 6Mbps for short clips
+        MAX_SIZE: 15 * 1024 * 1024,    // 15MB (Twitter/X limit)
+        TARGET_SIZE: 14 * 1024 * 1024,  // Target slightly below limit
+        MIN_BITRATE: 2000000,     // 2Mbps minimum for better quality
+        MAX_BITRATE: 8000000,     // 8Mbps maximum for high quality
         QUALITY_SETTINGS: {
-            high: 2000000,
-            normal: 1000000,
-            low: 500000
+            high: 8000000,    // 8Mbps for high quality
+            normal: 4000000,  // 4Mbps for normal quality
+            low: 2000000     // 2Mbps for low quality
         },
         FORMATS: {
             WEBM: {
@@ -599,7 +599,8 @@ async function initialize() {
             const loopCount = parseInt(document.getElementById('loop-count').value);
             const totalDuration = (FRAME_DURATION * FRAMES_IN_SEQUENCE * loopCount);
             
-            if (elapsed >= totalDuration) {
+            // Check if we need to loop slightly before the end to prevent frame drops
+            if (elapsed >= totalDuration - FRAME_DURATION) {
                 startTime = now;
                 if (piggySprite) {
                     piggySprite.gotoAndPlay(0);
@@ -608,13 +609,19 @@ async function initialize() {
                 // Reset video to start when animation loops
                 if (backgroundSprite?.texture.baseTexture.resource?.source instanceof HTMLVideoElement) {
                     const video = backgroundSprite.texture.baseTexture.resource.source;
-                    video.currentTime = videoStartTime;
+                    // Preload the next frame
+                    requestAnimationFrame(() => {
+                        video.currentTime = selectedStartTime;
+                    });
                 }
             }
 
             // Update background if it's a video
             if (backgroundSprite?.texture.baseTexture.resource?.source instanceof HTMLVideoElement) {
-                backgroundSprite.texture.update();
+                // Ensure texture updates happen in sync with the frame
+                requestAnimationFrame(() => {
+                    backgroundSprite.texture.update();
+                });
             }
         });
 
@@ -896,35 +903,22 @@ async function exportForSticker() {
 }
 
 // Update calculateOptimalBitrate to handle different formats
-function calculateOptimalBitrate(duration, format) {
-    let optimalBitrate = Math.floor((CONFIG.EXPORT.TARGET_SIZE * 8) / duration);
+function calculateOptimalBitrate(duration) {
+    // More relaxed compression for general use
+    const targetSize = CONFIG.EXPORT.TARGET_SIZE;
+    const compressionFactor = 1.1;  // Less aggressive compression
     
-    if (format?.mimeType.includes('mp4')) {
-        // Less conservative settings for better quality
-        optimalBitrate = Math.min(optimalBitrate, 4000000); // Cap at 4Mbps for MP4
-        
-        // Even for Safari, allow higher quality
-        const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-        if (isSafari) {
-            optimalBitrate = Math.min(optimalBitrate, 3000000); // Cap at 3Mbps for Safari
-        }
-    }
+    // Calculate bitrate based on target size and duration
+    let bitrate = Math.floor((targetSize * 8) / (duration * compressionFactor));
     
-    // More aggressive duration-based scaling for better quality
-    if (duration <= 0.5) {
-        optimalBitrate = Math.min(optimalBitrate * 2.0, CONFIG.EXPORT.MAX_BITRATE);
-    } else if (duration <= 1.0) {
-        optimalBitrate = Math.min(optimalBitrate * 1.7, CONFIG.EXPORT.MAX_BITRATE);
-    } else if (duration <= 2.0) {
-        optimalBitrate = Math.min(optimalBitrate * 1.4, CONFIG.EXPORT.MAX_BITRATE);
-    }
-    
-    // Ensure minimum bitrate
-    optimalBitrate = Math.max(optimalBitrate, CONFIG.EXPORT.MIN_BITRATE);
-    
-    console.log(`Format: ${format?.mimeType}, Duration: ${duration}s, Bitrate: ${Math.round(optimalBitrate/1000)}Kbps`);
-    
-    return Math.floor(optimalBitrate);
+    // Higher quality caps for general use
+    return Math.min(
+        Math.max(
+            CONFIG.EXPORT.MIN_BITRATE,
+            bitrate
+        ),
+        CONFIG.EXPORT.MAX_BITRATE
+    );
 }
 
 function updateQualityControls() {
@@ -1155,6 +1149,7 @@ async function loadVideoBackground(url) {
         video.loop = true;
         video.muted = true;
         video.playsInline = true;
+        video.preload = "auto"; // Ensure video is preloaded
         video.setAttribute('webkit-playsinline', '');
         video.setAttribute('playsinline', '');
         
@@ -1192,8 +1187,9 @@ async function loadVideoBackground(url) {
                 
                 // Add timeupdate listener to detect actual loops
                 video.addEventListener('timeupdate', () => {
-                    // Detect if video has looped (current time less than last time)
-                    if (video.currentTime < lastVideoTime) {
+                    // More precise loop detection
+                    if (video.currentTime < lastVideoTime || 
+                        Math.abs(video.currentTime - video.duration) < 0.1) {
                         video.currentTime = selectedStartTime;
                     }
                     lastVideoTime = video.currentTime;
@@ -1204,8 +1200,11 @@ async function loadVideoBackground(url) {
                     if (video.paused) {
                         video.play().catch(console.error);
                     }
+                    // Use requestAnimationFrame for smoother updates
                     if (texture) {
-                        texture.update();
+                        requestAnimationFrame(() => {
+                            texture.update();
+                        });
                     }
                 });
 
